@@ -1,0 +1,103 @@
+{
+    "Students": [
+        {
+            "Name": "Amit Goenka",
+            "Major": "Physics",
+            "address": {
+                "state": "KA",
+                "zip": "560016",
+                "address_1": "14, Malleshwaram",
+                "address_2": "Vinayaka Temple",
+                "city": "Bengaluru"
+            }
+        },
+        {
+            "Name": "Amit Goenka",
+            "Major": "Chemistry",
+            "address": {
+                "state": "j&k",
+                "zip": "560012",
+                "address_1": "14, Malleshwaram",
+                "address_2": "Vinayaka Temple",
+                "city": "jammu"
+            }
+        },
+        {
+            "Name": "Amit Goenka",
+            "Major": "Hindi",
+            "address": {
+                "state": "Pa",
+                "zip": "56658",
+                "address_1": "14, Malleshwaram",
+                "address_2": "Vinayaka Temple",
+                "city": "patna"
+            }
+        },
+        {
+            "Name": "Rakesh Goenka",
+            "Major": "Maths",
+            "address": {
+                "state": "PB",
+                "zip": "140119 ",
+                "address_1": "56, Netaji Road",
+                "address_2": "Gurudwara",
+                "city": "Abiana"
+            }
+        },
+        {
+            "Name": "Rakesh Jha",
+            "Major": "Bio",
+            "address": {
+                "state": "PB",
+                "zip": "160129 ",
+                "address_1": "34, Netaji Road",
+                "address_2": "Gurudwara",
+                "city": "Badheri"
+            }
+        },
+        {
+            "Name": "Pawan Goenka",
+            "Major": "Chem",
+            "address": {
+                "state": "PB",
+                "zip": "161110 ",
+                "address_1": "34, Netaji Road",
+                "address_2": "Gurudwara",
+                "city": "Badheri"
+            }
+        },
+        {
+            "Name": "Paresh Patil",
+            "Major": "Maths",
+            "address": {
+                "state": "PB",
+                "zip": "140120 ",
+                "address_1": "516, Netaji Road",
+                "address_2": "Gurudwara",
+                "city": "Abiana"
+            }
+        },
+        {
+            "Name": "Rakesh Asthana",
+            "Major": "Maths",
+            "address": {
+                "state": "MH",
+                "zip": "431101 ",
+                "address_1": "Vir Savarkar Marg",
+                "address_2": "Gaon Devi",
+                "city": "Mumbai"
+            }
+        },
+        {
+            "Name": "Rakesh Asthana",
+            "Major": "Physics",
+            "address": {
+                "state": "MH",
+                "zip": "431101 ",
+                "address_1": "Vir Savarkar Marg",
+                "address_2": "Gaon Devi",
+                "city": "Mumbai"
+            }
+        }
+    ]
+}
