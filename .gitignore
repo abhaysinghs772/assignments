@@ -1,6 +1,0 @@
-/node_modules/
-node_modules/
-/client/package-lock.json
-/server/package-lock.json
-/server/src/pdfs
-/server/src/merged

@@ -1,44 +1,9 @@
-import fs from 'fs';
-
-import { v4 } from 'uuid';
-import PDFDocument from 'pdfkit'
-import { PDFDocument as pdfLibDocument } from 'pdf-lib';
-
-import jsonData from '../../address.json' assert {type: 'json'};
-import Pdf from '../models/pdf.js';
-
-// Check if the file exists
-async function checkFileExistsorNot(filePath) {
-    return new Promise((resolve, reject) => {
-        fs.access(filePath, fs.constants.F_OK, (err) => {
-            if (err) {
-                console.log(`File doesn't exists`);
-                resolve(false);
-            } else {
-                console.log(`File exists : ${filePath}`);
-                resolve(true);
-            }
-        });
-    })
-}
-
-async function insert_Pdf_Into_Database(fileId, filePath) {
-    return Pdf.create({ pdfId: fileId, pdfPath: filePath });
-}
+import Record from "../models/db.js";
 
 export async function getRecords(req, res) {
     try {
-        let { Name, Major, state, zip, address_1, address_2, city } = req.query;
-        let response = jsonData.Students;
-
-        if (Name) response = response.filter((student) => student.Name === Name);
-        if (Major) response = response.filter((student) => student.Major === Major);
-        if (state) response = response.filter((student) => student.address.state === state);
-        if (zip) response = response.filter((student) => student.address.zip === zip);
-        if (city) response = response.filter((student) => student.address.city === city);
-        if (address_1) response = response.filter((student) => student.address.address_1 === address_1);
-        if (address_2) response = response.filter((student) => student.address.address_2 === address_2);
-
+        console.log("here");
+        let response = await Record.find({});
         res.json({ success: true, response });
     } catch (error) {
         console.error(error);
@@ -46,53 +11,25 @@ export async function getRecords(req, res) {
     }
 }
 
-export async function addStudentToPdf(req, res) {
+
+export async function addRecord(req, res) {
     try {
-        // Create a new PDF document
-        const doc = new PDFDocument();
-        let {
-            Name,
-            Major,
-            address: { state, zip, address_1, address_2, city }
-        } = req.body;
+        // Create a new Record
+        if (!Object.keys(req.body).length) {
+            res.status(400).json('empty records');
+        }
+        const newRecord = new Record({ ...req.body });
 
-        // Pipe the PDF document to a writable stream (file)
-        const fileId = v4();
-        const outputFilePath = `${process.cwd()}/src/pdfs/${fileId}.pdf`;
-        const writeStream = fs.createWriteStream(outputFilePath);
-        doc.pipe(writeStream);
-
-        // Add content to the PDF
-        doc.text('User Information', { align: 'center' });
-        doc.text(`Name: ${Name}`);
-        doc.text(`Major: ${Major}`);
-        doc.text('address:');
-        doc.text(`   state: ${state}`);
-        doc.text(`   zip: ${zip}`);
-        doc.text(`   address_1: ${address_1}`);
-        doc.text(`   address_2: ${address_2}`);
-        doc.text(`   city: ${city}`);
-
-        // Finalize and save the PDF
-        doc.end();
-
-        writeStream.on('finish', async () => {
-            console.log(`PDF saved to ${outputFilePath}`);
-            const savedPdf = await Pdf.create({ pdfId: fileId, pdfPath: outputFilePath });
-            res.json({ success: true, pdf: savedPdf });
-        });
-
-        writeStream.on('error', async (err) => {
-            console.error('Error writing PDF:', err);
-            res.status(500).json({ success: false, error: 'An error occurred' });
-        });
-
+        // Save the new record to the database
+        const savedRecord = await newRecord.save();
+        res.status(201).json(savedRecord);
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, error: 'An error occurred' });
     }
 }
 
+/* 
 export async function editStudentPdf(req, res) {
     if (!req.params.pdfId) {
         res.status(400).json({ error: 'bad request, file id is required' });
@@ -172,3 +109,4 @@ export async function mergePdfs(req, res) {
         res.status(500).json({ success: false, error: 'An error occurred' });
     }
 }
+*/

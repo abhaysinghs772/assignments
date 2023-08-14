@@ -3,20 +3,23 @@ import express from "express";
 import cors from "cors";
 
 /* Db */
-import sequelize from './models/db.js';
+import mongoose from 'mongoose';
+mongoose.connect('mongodb://localhost:27017/crud-app', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-async function init() {
-    await sequelize.sync();
-    console.log('Database synced');
-}
-init().catch((err) => {
-    console.error('Error syncing database:', err);
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
 });
 
 /* Routes */
 import recordsRoutes from "./routes/records.routes.js";
 
-const port = 3000;
+const port = 3002 || process.env.PORT;
 const app = express();
 
 app.get('/', (req, res) => { res.send("hello world") });
