@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImportsModule } from './imports_module/imports.module';
+import { SlotsLimiterMiddleware, DatesLimiterMiddleware } from './imports_module/limiters';
 
 @Module({
   imports: [
@@ -26,4 +27,15 @@ import { ImportsModule } from './imports_module/imports.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+        .apply( SlotsLimiterMiddleware )
+        .forRoutes( { path: '/api/v1/experience/:id/slots', method: RequestMethod.GET } )
+    
+    consumer
+        .apply(DatesLimiterMiddleware)
+        .forRoutes( { path: '/api/v1/experience/:id/dates', method: RequestMethod.GET } )
+  }
+}

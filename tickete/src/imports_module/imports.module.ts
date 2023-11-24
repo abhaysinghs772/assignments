@@ -1,23 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
-import { SlotsLimiterMiddleware, DatesLimiterMiddleware } from "./limiters";
+import { Module } from "@nestjs/common";
 import { ImportsController } from "./imports.controller";
 
 @Module({
     imports: [],
     controllers: [ImportsController],
     providers: [],
-    exports: [ImportsModule]
+    exports: []
 })
-export class ImportsModule implements NestModule {
-    constructor(){ }
-
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply( SlotsLimiterMiddleware )
-            .forRoutes( { path: '/api/v1/experience', method: RequestMethod.GET } )
-        
-        consumer
-            .apply(DatesLimiterMiddleware)
-            .forRoutes( { path: '/api/v1/experience', method: RequestMethod.GET } )
-    }
-}
+export class ImportsModule { }
