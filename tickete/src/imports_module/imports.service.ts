@@ -3,6 +3,7 @@ import { Cron, Interval, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm'; // datasorce for transectional query
 import { Slot, PaxAvailability } from './entities';
+import { SlotResponse } from './interfaces/slotResponse.dto';
 import axios from 'axios';
 import { mapSeries } from 'async';
 
@@ -109,7 +110,7 @@ export class ImportsService {
 
               // did this because incoming pax data has not any unique property
               // order of both fetchedPax and existingPax is same
-              for (let pax of existingSlot.paxAvailability){
+              for (let pax of existingSlot.paxAvailability) {
                 let index = existingSlot.paxAvailability.indexOf(pax);
                 let updatedPax = new PaxAvailability(pax.id);
                 Object.assign(updatedPax, {
@@ -127,7 +128,7 @@ export class ImportsService {
 
             // insert the new slot
             const newSlot = new Slot();
-            
+
             Object.assign(newSlot, {
               startDate: startDate,
               startTime: fetchedSlot.startTime,
@@ -142,8 +143,7 @@ export class ImportsService {
             await this.getSlotRepo().save(newSlot);
 
             if (fetchedSlot.paxAvailability.length) {
-              
-              await new Promise ((resolve, reject)=> {
+              await new Promise((resolve, reject) => {
                 mapSeries(fetchedSlot.paxAvailability, async (pax, cb) => {
                   let newPax = new PaxAvailability();
                   Object.assign(newPax, {
@@ -162,8 +162,8 @@ export class ImportsService {
                   });
                   await this.getPaxRepo().save(newPax);
                 });
-                resolve({ });
-              }); 
+                resolve({});
+              });
             }
           }
         } catch (error) {
@@ -174,23 +174,43 @@ export class ImportsService {
   }
 
   @Cron('0 0 */4 * * *') // Every 4 hours
-  async handleEvery4Hours() {
+  private async handleEvery4Hours() {
     // Fetch availability for the next 7 days
     await this.fetchAvailability(14, 7);
     await this.fetchAvailability(15, 7);
   }
 
   @Cron('0 0 0 * * *') // Every day at midnight
-  async handleEveryDay() {
+  private async handleEveryDay() {
     // Fetch availability for the next 30 days
     await this.fetchAvailability(14, 30);
     await this.fetchAvailability(15, 30);
   }
 
   @Cron('0 */15 * * * *') // Every 15 minutes
-  async handleEvery15Minutes() {
+  private async handleEvery15Minutes() {
     // Fetch availability for today
     this.fetchAvailability(14, 1);
     await this.fetchAvailability(15, 1);
+  }
+
+  async fetchAllSlotsBy_Id_And_Date(slotId: string, date: string) {    
+    let formattedDate = date.split('-').reverse().join('-'); // yyyy-mm-dd for pgSql
+    console.log(formattedDate);    
+
+    let allSlots = await this.getSlotRepo().find({
+      where: {
+        id: slotId,
+        startDate: formattedDate
+      },
+      relations: ['paxAvailability'],
+    });
+    
+    let slotsResponse: SlotResponse[] = [];
+    for (let slot of allSlots){
+      slotsResponse.push(new SlotResponse(slot));
+    }
+
+    return slotsResponse;
   }
 }

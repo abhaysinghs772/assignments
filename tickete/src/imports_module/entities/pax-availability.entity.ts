@@ -3,7 +3,7 @@ import { Slot } from './slot.entity';
 import { BaseEntity } from './base.entity';
 
 @Entity()
-// @Unique(['slot'])
+@Unique(['slot'])
 export class PaxAvailability extends BaseEntity{
 
   @ManyToOne(() => Slot, (slot) => slot.paxAvailability)
