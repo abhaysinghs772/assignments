@@ -230,46 +230,61 @@ export class ImportsService {
 
   // return all available dates for 2 months
   async DateAvailability(slotId) {
-    console.log(2);
-
     let twoMonthsDates = this.getNextNDays(60); // dd-mm-yyyy for api
     let datesAvailablity = [];
 
-    // console.log(3);
-
+    /* the code below was tasking 13176 ms to 15040 ms
     await new Promise((resolve, reject) => {
-      mapSeries(twoMonthsDates, async (eachDay, cb) => {
-        // console.log(4);
+      mapSeries(
+        twoMonthsDates,
+        (eachDay, cb) => {
+          // made this IIFE because mapSeries was working unexpectedly
+          (async () => {
+            let formattedDate = eachDay.split('-').reverse().join('-'); // yyyy-mm-dd
 
-        let formattedDate = eachDay.split('-').reverse().join('-'); // yyyy-mm-dd
-
-        // console.log(new Date().getTime()); // fix this 
-
-        let slot = await this.getSlotRepo().find({
-          where: {
-            id: slotId,
-            startDate: formattedDate,
-          },
-          relations: ['paxAvailability'],
-        });
-        // console.log(new Date().getTime());
-        // console.log(5);
-        // console.log(new Date().getTime());
-        if (slot.length) {
-          datesAvailablity.push(new DatesResponse(slot[0]));
-          // console.log(datesAvailablity);
-          // console.log(6);
+            // weierd portion >>>>>>>>>>>>>>>>
+            let slot = await this.getSlotRepo().find({
+              where: {
+                id: slotId,
+                startDate: formattedDate,
+              },
+              relations: ['paxAvailability'],
+            });
+            // weierd portion >>>>>>>>>>>>>>>>
+            if (slot.length) {
+              datesAvailablity.push(new DatesResponse(slot[0]));
+            }
+            cb(null);
+          })();
+        },
+        (error) => {
+          if (error) console.log(error);
+          resolve({});
         }
-        resolve({});
-      });
-      // console.log(7);
+      );
     });
+    */
 
-    // console.log(8);
+    for (let eachDay of twoMonthsDates) {
+      let formattedDate = eachDay.split('-').reverse().join('-'); // yyyy-mm-dd
+
+      let slot = await this.getSlotRepo().find({
+        where: {
+          id: slotId,
+          startDate: formattedDate,
+        },
+        relations: ['paxAvailability'],
+      });
+
+      if (slot.length) {
+        datesAvailablity.push(new DatesResponse(slot[0]));
+      }
+    }
+
     return datesAvailablity;
   }
 
-  async fetchAllSlots(){
+  async fetchAllSlots() {
     return this.getSlotRepo().find();
   }
 }

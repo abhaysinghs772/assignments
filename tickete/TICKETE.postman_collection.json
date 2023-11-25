@@ -1,0 +1,237 @@
+{
+	"info": {
+		"_postman_id": "5a4d0f85-04a7-464b-9a56-97114c027379",
+		"name": "TICKETE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "22336305"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:3000"
+			},
+			"response": []
+		},
+		{
+			"name": "https://leap-api.tickete.co/api/v1/inventory/<productId>?date=<date>",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "6a7e6e66c8f8df9f5c2c93c3df5b6e0a"
+					}
+				],
+				"url": {
+					"raw": "https://leap-api.tickete.co/api/v1/inventory/14?date=23-11-2023",
+					"protocol": "https",
+					"host": [
+						"leap-api",
+						"tickete",
+						"co"
+					],
+					"path": [
+						"api",
+						"v1",
+						"inventory",
+						"14"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "23-11-2023"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://holdup-api.tickete.co/api/v1/experience/56/slots",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://holdup-api.tickete.co/api/v1/experience/56/slots",
+					"protocol": "https",
+					"host": [
+						"holdup-api",
+						"tickete",
+						"co"
+					],
+					"path": [
+						"api",
+						"v1",
+						"experience",
+						"56",
+						"slots"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-11-25",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://holdup-api.tickete.co/api/v1/experience/56/slots?startDate=2023-11-25",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://holdup-api.tickete.co/api/v1/experience/56/slots?startDate=2023-11-25",
+					"protocol": "https",
+					"host": [
+						"holdup-api",
+						"tickete",
+						"co"
+					],
+					"path": [
+						"api",
+						"v1",
+						"experience",
+						"56",
+						"slots"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2023-11-25"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://holdup-api.tickete.co/api/v1/experience/56/dates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://holdup-api.tickete.co/api/v1/experience/56/dates"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/api/v1/experience/:id/slots?date=25-11-2023",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/v1/experience/:id/slots?date=25-11-2023",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"experience",
+						":id",
+						"slots"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "25-11-2023"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "fy5dYTiDvM"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/api/v1/experience/slots",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:3000/api/v1/experience/slots"
+			},
+			"response": []
+		},
+		{
+			"name": "https://holdup-api.tickete.co/api/v1/experience/56/dates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://holdup-api.tickete.co/api/v1/experience/56/dates"
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/api/v1/experience/:id/dates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/v1/experience/:id/dates",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"experience",
+						":id",
+						"dates"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "fy5dYTiDvM"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/api/v1/experience/:id/slots?date=24-11-2023",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/v1/experience/:id/slots?date=25-11-2023",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"experience",
+						":id",
+						"slots"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "25-11-2023"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "fy5dYTiDvM"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
