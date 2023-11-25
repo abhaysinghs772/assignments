@@ -1,12 +1,13 @@
 import { Slot } from '../entities';
 
-type Price = {
+// using it inside dates response
+export type Price = {
     finalPrice: number;
     currencyCode: string;
     originalPrice: number;
 };
 
-type PaxAvailability = {
+export type PaxAvailability = {
     type: string;
     name?: string;
     description?: string;

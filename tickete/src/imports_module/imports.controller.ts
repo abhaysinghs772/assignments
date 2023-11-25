@@ -12,4 +12,15 @@ export class ImportsController {
     getSlots(@Query('date') date: string, @Param('id') id): Promise<SlotResponse[]>{
         return this.importService.fetchAllSlotsBy_Id_And_Date(id, date);
     }
+
+    @Get('/:id/dates')
+    getDateAvailability(@Param('id') id) {
+        // console.log(1);
+        return this.importService.DateAvailability(id);
+    }
+
+    @Get('/slots')
+    fetchAllSlots(){
+        return this.importService.fetchAllSlots();
+    }
 }
