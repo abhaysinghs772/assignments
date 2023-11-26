@@ -124,7 +124,7 @@ export class ImportsService {
                       });
                       allComingPaxes.push(updatedPaxData);
                     });
-                    
+
                     // did this because incoming pax data has not any unique property
                     // order of both fetchedPax and existingPax is same
                     for (let pax of existingSlot.paxAvailability) {
@@ -259,28 +259,39 @@ export class ImportsService {
   }
 
   async fetchAllSlotsBy_Id_And_Date(slotId: string, date: string) {
-    let formattedDate = date.split('-').reverse().join('-'); // yyyy-mm-dd for pgSql
-
-    let allSlots = await this.getSlotRepo().find({
-      where: {
-        id: slotId,
-        startDate: formattedDate,
-      },
-      relations: ['paxAvailability'],
-    });
-
-    let slotsResponse: SlotResponse[] = [];
-    for (let slot of allSlots) {
-      slotsResponse.push(new SlotResponse(slot));
+    try {
+      let slotsResponse: SlotResponse[] = [];
+      let formattedDate = date.split('-').reverse().join('-'); // yyyy-mm-dd for pgSql
+      
+      let allSlots = await this.getSlotRepo().find({
+        where: {
+          id: slotId,
+          startDate: formattedDate,
+        },
+        relations: ['paxAvailability'],
+      });
+      
+      for (let slot of allSlots) {
+        slotsResponse.push(new SlotResponse(slot));
+      }
+      
+      return slotsResponse;
+    } catch (error) {
+      console.log(
+        JSON.stringify({
+          type: 'SERVER ERROR',
+          message: `error while fetching all slots by their id and dates`,
+          error: error
+        })
+      );
+      throw new HttpException(`its not you, it's us`, HttpStatus.INTERNAL_SERVER_ERROR);  
     }
-
-    return slotsResponse;
   }
 
   // return all available dates for 2 months
   async DateAvailability(slotId) {
-    let twoMonthsDates = this.getNextNDays(60); // dd-mm-yyyy for api
     let datesAvailablity = [];
+    let twoMonthsDates = this.getNextNDays(60); // dd-mm-yyyy for api
 
     /* the code below was taking 13176 ms to 15040 ms
     await new Promise((resolve, reject) => {
@@ -314,20 +325,31 @@ export class ImportsService {
     });
     */
 
+   try {
     for (let eachDay of twoMonthsDates) {
       let formattedDate = eachDay.split('-').reverse().join('-'); // yyyy-mm-dd
 
-      let slot = await this.getSlotRepo().find({
-        where: {
-          id: slotId,
-          startDate: formattedDate,
-        },
-        relations: ['paxAvailability'],
-      });
-
-      if (slot.length) {
-        datesAvailablity.push(new DatesResponse(slot[0]));
+        let slot = await this.getSlotRepo().find({
+          where: {
+            id: slotId,
+            startDate: formattedDate,
+          },
+          relations: ['paxAvailability'],
+        });
+  
+        if (slot.length) {
+          datesAvailablity.push(new DatesResponse(slot[0]));
+        }
       }
+    } catch (error){
+      console.log(
+        JSON.stringify({
+          type: 'SERVER ERROR',
+          message: `error while fetching dates availability for slots`,
+          error: error
+        })
+      );
+      throw new HttpException(`its not you, it's us`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     return datesAvailablity;
