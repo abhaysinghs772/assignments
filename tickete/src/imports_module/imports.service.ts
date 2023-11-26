@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { Cron, Interval, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm'; // datasorce for transectional query
@@ -57,133 +57,182 @@ export class ImportsService {
     inventoryId: number,
     days: number,
   ): Promise<void> {
-    const next30Days = this.getNextNDays(days);
-    mapSeries(next30Days, async (eachDay, cb) => {
+    const nextNDays = this.getNextNDays(days);
+    mapSeries(nextNDays, async (eachDay, cb) => {
       const url = `${this.apiUrl}/${inventoryId}?date=${eachDay}`;
-      const response = await axios.get(url, {
-        headers: {
-          'x-api-key': process.env.API_KEY,
-        },
-      });
-      // Process the availability data here
-      console.log(
-        `Fetched availability for Inventory ${inventoryId} for the next ${days} days`,
-      );
 
-      // sync fetched data to db here
-      if (response.data.length) {
-        mapSeries(response.data, async (fetchedSlot, cb) => {
-          // check for existing slot if any in db with unique providerSlotId
-          // if yes then update else insert a new one
-          try {
-            let existingSlot = await this.getSlotRepo().findOne({
-              where: {
-                providerSlotId: fetchedSlot.providerSlotId,
-              },
-              relations: ['paxAvailability'],
-            });
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            'x-api-key': process.env.API_KEY,
+          },
+        });
+        // Process the availability data here
+        console.log(
+          `Fetched availability for Inventory ${inventoryId} for the next ${days} days`,
+        );
 
-            if (existingSlot) {
-              // update the slot  oth index of existing slot
-              let startDate = fetchedSlot.startDate
-                .split('-')
-                .reverse()
-                .join('-');
-
-              existingSlot.startDate = startDate;
-              existingSlot.startTime = fetchedSlot.startTime;
-              existingSlot.endTime = fetchedSlot.endTime;
-              // not updating this column because it's unique
-              // existingSlot.providerSlotId = fetchedSlot.providerSlotId;
-              existingSlot.remaining = fetchedSlot.remaining;
-              existingSlot.currencyCode = fetchedSlot.currencyCode;
-              existingSlot.variantId = fetchedSlot.variantId;
-
-              await this.getSlotRepo().save(existingSlot);
-
-              if (fetchedSlot.paxAvailability.length) {
-                let allComingPaxes = [];
-                mapSeries(fetchedSlot.paxAvailability, async (pax, cb) => {
-                  let updatedPaxData = {};
-                  Object.assign(updatedPaxData, {
-                    max: pax.max,
-                    min: pax.min,
-                    remaining: pax.remaining,
-                    type: pax.type,
-                    isPrimary: pax.isPrimary ? true : false,
-                    description: pax.description,
-                    name: pax.name,
-                    discount: pax.price?.discount,
-                    finalPrice: pax.price.finalPrice,
-                    originalPrice: pax.price.originalPrice,
-                    currencyCode: pax.price.currencyCode,
-                    slot: new Slot(existingSlot.id), // refrencing
-                  });
-                  allComingPaxes.push(updatedPaxData);
-                });
-
-                // did this because incoming pax data has not any unique property
-                // order of both fetchedPax and existingPax is same
-                for (let pax of existingSlot.paxAvailability) {
-                  let index = existingSlot.paxAvailability.indexOf(pax);
-                  let updatedPax = new PaxAvailability(pax.id);
-                  Object.assign(updatedPax, {
-                    ...allComingPaxes[index],
-                  });
-                  await this.getPaxRepo().save(updatedPax);
-                }
-              }
-            } else {
-              // pgSql's standard date fromat is yyyy-mm-dd that
-              let startDate = fetchedSlot.startDate
-                .split('-')
-                .reverse()
-                .join('-');
-
-              // insert the new slot
-              const newSlot = new Slot();
-
-              Object.assign(newSlot, {
-                startDate: startDate,
-                startTime: fetchedSlot.startTime,
-                endTime: fetchedSlot.endTime,
-                providerSlotId: fetchedSlot.providerSlotId,
-                remaining: fetchedSlot.remaining,
-                currencyCode: fetchedSlot.currencyCode,
-                variantId: fetchedSlot.variantId,
-                paxAvailability: [],
+        // sync fetched data to db here
+        if (response.data.length) {
+          mapSeries(response.data, async (fetchedSlot, cb) => {
+            // check for existing slot if any in db with unique providerSlotId
+            // if yes then update else insert a new one
+            try {
+              let existingSlot = await this.getSlotRepo().findOne({
+                where: {
+                  providerSlotId: fetchedSlot.providerSlotId,
+                },
+                relations: ['paxAvailability'],
               });
 
-              await this.getSlotRepo().save(newSlot);
+              if (existingSlot) {
+                try {
+                  // update the slot  oth index of existing slot
+                  let startDate = fetchedSlot.startDate
+                    .split('-')
+                    .reverse()
+                    .join('-');
 
-              if (fetchedSlot.paxAvailability.length) {
-                await new Promise((resolve, reject) => {
-                  mapSeries(fetchedSlot.paxAvailability, async (pax, cb) => {
-                    let newPax = new PaxAvailability();
-                    Object.assign(newPax, {
-                      max: pax.max,
-                      min: pax.min,
-                      remaining: pax.remaining,
-                      type: pax.type,
-                      isPrimary: pax.isPrimary ? true : false,
-                      description: pax.description,
-                      name: pax.name,
-                      discount: pax.price?.discount,
-                      finalPrice: pax.price.finalPrice,
-                      originalPrice: pax.price.originalPrice,
-                      currencyCode: pax.price.currencyCode,
-                      slot: new Slot(newSlot.id), // refrencing
+                  existingSlot.startDate = startDate;
+                  existingSlot.startTime = fetchedSlot.startTime;
+                  existingSlot.endTime = fetchedSlot.endTime;
+                  // not updating this column because it's unique
+                  // existingSlot.providerSlotId = fetchedSlot.providerSlotId;
+                  existingSlot.remaining = fetchedSlot.remaining;
+                  existingSlot.currencyCode = fetchedSlot.currencyCode;
+                  existingSlot.variantId = fetchedSlot.variantId;
+
+                  await this.getSlotRepo().save(existingSlot);
+
+                  if (fetchedSlot.paxAvailability.length) {
+                    let allComingPaxes = [];
+                    mapSeries(fetchedSlot.paxAvailability, async (pax, cb) => {
+                      let updatedPaxData = {};
+                      Object.assign(updatedPaxData, {
+                        max: pax.max,
+                        min: pax.min,
+                        remaining: pax.remaining,
+                        type: pax.type,
+                        isPrimary: pax.isPrimary ? true : false,
+                        description: pax.description,
+                        name: pax.name,
+                        discount: pax.price?.discount,
+                        finalPrice: pax.price.finalPrice,
+                        originalPrice: pax.price.originalPrice,
+                        currencyCode: pax.price.currencyCode,
+                        slot: new Slot(existingSlot.id), // refrencing
+                      });
+                      allComingPaxes.push(updatedPaxData);
                     });
-                    await this.getPaxRepo().save(newPax);
+                    
+                    // did this because incoming pax data has not any unique property
+                    // order of both fetchedPax and existingPax is same
+                    for (let pax of existingSlot.paxAvailability) {
+                      let index = existingSlot.paxAvailability.indexOf(pax);
+                      let updatedPax = new PaxAvailability(pax.id);
+                      Object.assign(updatedPax, {
+                        ...allComingPaxes[index],
+                      });
+                      await this.getPaxRepo().save(updatedPax);
+                    }
+                  }
+                } catch (error) {
+                  console.log(
+                    JSON.stringify({
+                      type: 'DB ERROR',
+                      message: `error while updation of slots`,
+                      error: error
+                    })
+                  );
+                }
+              } else {
+                try {
+                  // pgSql's standard date fromat is yyyy-mm-dd that
+                  let startDate = fetchedSlot.startDate
+                    .split('-')
+                    .reverse()
+                    .join('-');
+
+                  // insert the new slot
+                  const newSlot = new Slot();
+
+                  Object.assign(newSlot, {
+                    startDate: startDate,
+                    startTime: fetchedSlot.startTime,
+                    endTime: fetchedSlot.endTime,
+                    providerSlotId: fetchedSlot.providerSlotId,
+                    remaining: fetchedSlot.remaining,
+                    currencyCode: fetchedSlot.currencyCode,
+                    variantId: fetchedSlot.variantId,
+                    paxAvailability: [],
                   });
-                  resolve({});
-                });
+
+                  await this.getSlotRepo().save(newSlot);
+
+                  if (fetchedSlot.paxAvailability.length) {
+                    await new Promise((resolve, reject) => {
+                      mapSeries(fetchedSlot.paxAvailability, async (pax, cb) => {
+                        try {
+                          let newPax = new PaxAvailability();
+                          Object.assign(newPax, {
+                            max: pax.max,
+                            min: pax.min,
+                            remaining: pax.remaining,
+                            type: pax.type,
+                            isPrimary: pax.isPrimary ? true : false,
+                            description: pax.description,
+                            name: pax.name,
+                            discount: pax.price?.discount,
+                            finalPrice: pax.price.finalPrice,
+                            originalPrice: pax.price.originalPrice,
+                            currencyCode: pax.price.currencyCode,
+                            slot: new Slot(newSlot.id), // refrencing
+                          });
+                          await this.getPaxRepo().save(newPax); 
+                        } catch (error) {
+                          console.log(
+                            JSON.stringify({
+                              type: 'DB ERROR', 
+                              message: `error while saving pax`,
+                              error: error
+                            })
+                          );
+                        }
+                      });
+                      resolve({});
+                    });
+                  }
+                } catch (error) {
+                    console.log(
+                      JSON.stringify({
+                        type: 'DB ERROR',
+                        message: 'error while saving slots or pax',
+                        error: error
+                      })
+                    );
+                }
               }
+            } catch (error) {
+              console.log(
+                JSON.stringify({
+                  type: 'DB ERROR',
+                  message: `error in either insertion or updation of slots`,
+                  error: error
+                })
+              );
             }
-          } catch (error) {
-            console.log(error);
-          }
-        });
+          });
+        }
+      } catch (error) {
+        // can also use some third party pais or free services in order monitor errors and exceptions 
+        // like mezmo and bugsnag, but for now i am only using normal console logs
+        console.log(
+          JSON.stringify({
+            type: 'CRON ERROR',
+            message: `error while processing cron-job InventoryId: ${inventoryId} , days: ${days}`,
+            error: error
+          })
+        );
       }
     });
   }
@@ -233,7 +282,7 @@ export class ImportsService {
     let twoMonthsDates = this.getNextNDays(60); // dd-mm-yyyy for api
     let datesAvailablity = [];
 
-    /* the code below was tasking 13176 ms to 15040 ms
+    /* the code below was taking 13176 ms to 15040 ms
     await new Promise((resolve, reject) => {
       mapSeries(
         twoMonthsDates,
