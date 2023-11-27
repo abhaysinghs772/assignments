@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import express from 'express';
@@ -15,6 +16,8 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '1024mb' }));
   app.use(bodyParser.urlencoded({ limit: '1024mb', extended: true }));
   app.use(logger('dev'));
+  
+  app.useGlobalPipes(new ValidationPipe());
 
   const microserviceOptions: TcpOptions | MqttOptions = {};
 

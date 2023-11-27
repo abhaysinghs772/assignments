@@ -32,11 +32,12 @@ export class AdminService {
     let { name, email, password, phone_number, role_name } = body;
 
     // check for existing user with the coming credentials
-    const userExist = await this.getUserRepo().find({
-      where: {
-        email: email,
-        phone_number: phone_number,
-      },
+    const userExist = await this.getUserRepo().findOne({
+      // implementing or where clause here by giving each condition as an object
+      where: [
+            { email: email }, 
+            { phone_number: phone_number }
+        ],
     });
 
     if (userExist) {
@@ -51,7 +52,7 @@ export class AdminService {
     // else throw exception
     if (role_name === 'super-admin') {
       try {
-        const superAdminExist = await this.getUserRepo().find({
+        const superAdminExist = await this.getUserRepo().findOne({
           where: {
             role_name: role_name,
           },
@@ -65,7 +66,7 @@ export class AdminService {
 
         // email = xyzSomeString@email.com => username = xyzSomeString
         const username = email.split('@')[0];
-        const encryptedPass = bcrypt.hash(password, 10);
+        const encryptedPass = await bcrypt.hash(password, 10);
         let superAdmin = new User();
         Object.assign(superAdmin, {
           username,
@@ -73,13 +74,14 @@ export class AdminService {
           email,
           phone_number,
           role_name,
-          encryptedPass,
+          password: encryptedPass,
           signUpDate: moment().toDate(),
         });
-        superAdmin = await this.getUserRepo().save(superAdmin);
-
         // saving permissions for super-admin
-        await this.permissionService.createPermissions_for_users(superAdmin);
+        superAdmin =
+          await this.permissionService.createPermissions_for_users(superAdmin);
+
+        superAdmin = await this.getUserRepo().save(superAdmin);
 
         return {
           message: `super admin created successfully, this is your user-name: ${username}, use this for signing in`,
@@ -88,7 +90,7 @@ export class AdminService {
         console.log(
           JSON.stringify({
             type: 'SERVER ERROR',
-            error: error,
+            error: error.message,
           }),
         );
 
@@ -103,34 +105,34 @@ export class AdminService {
       try {
         const username = email.split('@')[0];
         let admin = new User();
-        const encryptedPass = bcrypt.hash(password, 10);
+        const encryptedPass = await bcrypt.hash(password, 10);
         Object.assign(admin, {
           username,
           name,
           email,
           phone_number,
           role_name,
-          encryptedPass,
+          password: encryptedPass,
           signUpDate: moment().toDate(),
         });
-        admin = await this.getUserRepo().save(admin);
-
         // creating permissions for admin
-        await this.permissionService.createPermissions_for_users(admin);
+        admin = await this.permissionService.createPermissions_for_users(admin);
+        
+        admin = await this.getUserRepo().save(admin);
 
         return {
           message: `admin created successfully, this is your user-name: ${username}, use this for signing in`,
         };
       } catch (error) {
         console.log(
-            JSON.stringify({
-              type: 'SERVER ERROR',
-              error: error,
-            }),
+          JSON.stringify({
+            type: 'SERVER ERROR',
+            error: error.message,
+          }),
         );
         throw new HttpException(
-            `something went wrong`,
-            HttpStatus.INTERNAL_SERVER_ERROR,
+          `something went wrong`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }

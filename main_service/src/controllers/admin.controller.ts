@@ -1,5 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AdminService } from '../services';
+import { CreateAdminBody } from '../dtos';
 
 @Controller('/api/v1/bhumio')
 export class AdminController {
@@ -11,7 +12,7 @@ export class AdminController {
    * @param body
    */
   @Post('/createAdmin-admin')
-  async create_SuperAdmin_or_Admin(@Body() body) {
+  async create_SuperAdmin_or_Admin(@Body() body: CreateAdminBody) {
     return this.adminService.create_SuperAdmin_Or_Admin(body);
   }
 }

@@ -6,7 +6,7 @@ export class PermissionService {
   constructor(private readonly adminService: AdminService) {}
 
   // a super admin must have all the permissions related to their admin workspace
-  private readonly super_admin_role_permissions: [
+  private readonly super_admin_role_permissions = [
     Permission.createAdmin,
     Permission.createUser,
     Permission.createSupportDesk,
@@ -30,7 +30,7 @@ export class PermissionService {
     Permission.removeTransection,
   ];
 
-  private readonly admin_role_permissions: [
+  private readonly admin_role_permissions = [
     Permission.createUser,
     Permission.createPowerUser,
     Permission.removeuser,
@@ -47,16 +47,16 @@ export class PermissionService {
   ];
 
   async createPermissions_for_users(user: User) {
-    if (user.name === 'super-admin') {
+    if (user.role_name === 'super-admin') {
       user.role_permissions = this.super_admin_role_permissions;
-      return this.adminService.getUserRepo().save(user);
+      
+      // modified in order to prevent extra sql query transection
+      return user;
     }
 
-    if (user.name === 'admin') {
+    if (user.role_name === 'admin') {
       user.role_permissions = this.admin_role_permissions;
-      return this.adminService.getUserRepo().save(user);
+      return user;
     }
-
-    return;
   }
 }

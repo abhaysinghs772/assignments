@@ -26,10 +26,10 @@ export class User extends BaseEntity {
   @Column('timestamp with time zone', { nullable: true })
   signUpDate!: Date;
 
-  @Column()
+  @Column({ default: false })
   isOnline!: boolean;
 
-  @Column()
+  @Column({ default: false })
   isActive!: boolean;
 
   @Column('timestamp with time zone', { nullable: true })
@@ -41,6 +41,6 @@ export class User extends BaseEntity {
   @Column({ default: true })
   role_editable!: boolean;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', array: true, nullable: false})
   role_permissions!: Permission[];
 }

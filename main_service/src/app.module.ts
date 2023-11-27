@@ -18,7 +18,7 @@ import { User } from './entities';
       database: process.env.DB_NAME,
       entities: [User],
       synchronize: true, 
-      logging: true,
+      logging: false,
       // the line below (ssl config )is most important for aws-Rds
       ssl: {
         rejectUnauthorized: false,
