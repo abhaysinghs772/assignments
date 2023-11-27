@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { AdminController } from './controllers/admin.controller';
 import { AppService } from './app.service';
+import { AdminService, PermissionService } from './services';
 import { Transport, ClientsModule } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Role, User } from './entities';
+import { User } from './entities';
 
 @Module({
   imports: [
@@ -14,14 +16,15 @@ import { Role, User } from './entities';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      entities: [User, Role],
-      synchronize: false, 
-      logging: false,
+      entities: [User],
+      synchronize: true, 
+      logging: true,
       // the line below (ssl config )is most important for aws-Rds
       ssl: {
         rejectUnauthorized: false,
       },
     }),
+    TypeOrmModule.forFeature([User]),
     ClientsModule.register([
       {
         name: 'NOTIFICATION_SERVICE',
@@ -33,7 +36,7 @@ import { Role, User } from './entities';
       },
     ]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AdminController],
+  providers: [AppService, AdminService, PermissionService],
 })
 export class AppModule {}

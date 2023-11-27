@@ -1,6 +1,23 @@
 export enum Permission {
     createAdmin,
-    createSuperUser,
     createUser,
-    createSupportDesk
+    createSupportDesk,
+    createPowerUser,
+    removeAdmin,
+    removeuser,
+    removePoweruser,
+    removeSupportDesk,
+
+    // groups 
+    createGroup,
+    viewGroup,
+    viewAllGroup,
+    editGroup,
+    removeGroup,
+
+    // transections,
+    createTransection,
+    viewTransection,
+    editTransection,
+    removeTransection,
 }
