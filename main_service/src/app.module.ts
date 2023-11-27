@@ -2,9 +2,26 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Transport, ClientsModule } from '@nestjs/microservices';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Role, User } from './entities';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: 5432,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
+      entities: [User, Role],
+      synchronize: false, 
+      logging: false,
+      // the line below (ssl config )is most important for aws-Rds
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    }),
     ClientsModule.register([
       {
         name: 'NOTIFICATION_SERVICE',

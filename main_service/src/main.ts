@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import express from 'express';
@@ -31,8 +32,8 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   await app.init();
-  await app.listen(3000, () => {
-    console.log('main_service is listening on port 3000');
+  await app.listen(5000, () => {
+    console.log('main_service is listening on port 5000');
   });
 }
 bootstrap();
