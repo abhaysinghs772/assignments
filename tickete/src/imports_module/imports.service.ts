@@ -141,7 +141,7 @@ export class ImportsService {
                     JSON.stringify({
                       type: 'DB ERROR',
                       message: `error while updation of slots`,
-                      error: error
+                      error: error.message
                     })
                   );
                 }
@@ -194,7 +194,7 @@ export class ImportsService {
                             JSON.stringify({
                               type: 'DB ERROR', 
                               message: `error while saving pax`,
-                              error: error
+                              error: error.message
                             })
                           );
                         }
@@ -207,7 +207,7 @@ export class ImportsService {
                       JSON.stringify({
                         type: 'DB ERROR',
                         message: 'error while saving slots or pax',
-                        error: error
+                        error: error.message
                       })
                     );
                 }
@@ -217,7 +217,7 @@ export class ImportsService {
                 JSON.stringify({
                   type: 'DB ERROR',
                   message: `error in either insertion or updation of slots`,
-                  error: error
+                  error: error.message
                 })
               );
             }
@@ -230,7 +230,7 @@ export class ImportsService {
           JSON.stringify({
             type: 'CRON ERROR',
             message: `error while processing cron-job InventoryId: ${inventoryId} , days: ${days}`,
-            error: error
+            error: error.message
           })
         );
       }
@@ -281,7 +281,7 @@ export class ImportsService {
         JSON.stringify({
           type: 'SERVER ERROR',
           message: `error while fetching all slots by their id and dates`,
-          error: error
+          error: error.message
         })
       );
       throw new HttpException(`its not you, it's us`, HttpStatus.INTERNAL_SERVER_ERROR);  
@@ -346,7 +346,7 @@ export class ImportsService {
         JSON.stringify({
           type: 'SERVER ERROR',
           message: `error while fetching dates availability for slots`,
-          error: error
+          error: error.message
         })
       );
       throw new HttpException(`its not you, it's us`, HttpStatus.INTERNAL_SERVER_ERROR);
