@@ -36,5 +36,8 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
+#debugger
+.vscode
+
 #pdf
 Assignment_AdminRoles-E-Sign.pdf
