@@ -14,6 +14,7 @@ export enum Permission {
     viewAllGroup,
     editGroup,
     removeGroup,
+    assign_admin_to_group,
 
     // transections,
     createTransection,

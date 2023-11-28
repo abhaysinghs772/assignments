@@ -27,7 +27,7 @@ export class AdminService {
   ) {}
 
   /**
-   * in order to create transextion Queries to db
+   * in order to create transection Queries to db
    * @returns datasource
    */
   getDataSource() {
@@ -38,7 +38,7 @@ export class AdminService {
     return this.user;
   }
 
-  async create_SuperAdmin_Or_Admin(body: CreateAdminBody) {
+  async signUp_SuperAdmin_Or_Admin(body: CreateAdminBody) {
     let { name, email, password, phone_number, role_name } = body;
 
     // check for existing user with the coming credentials
@@ -188,5 +188,9 @@ export class AdminService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async update_Permissions_Of_Admin_And_SuperAdmins(query){
+    return this.permissionService.update_Permissions_Of_Admin_And_SuperAdmins(query);
   }
 }
