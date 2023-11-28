@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AdminController } from './controllers/admin.controller';
+import { AdminController, AuthController } from './controllers';
 import { AppService } from './app.service';
-import { AdminService, PermissionService } from './services';
+import { AdminService, AuthService, PermissionService } from './services';
 import { Transport, ClientsModule } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities';
@@ -36,7 +36,7 @@ import { User } from './entities';
       },
     ]),
   ],
-  controllers: [AppController, AdminController],
-  providers: [AppService, AdminService, PermissionService],
+  controllers: [AppController, AdminController, AuthController],
+  providers: [AppService, AdminService, AuthService , PermissionService],
 })
 export class AppModule {}

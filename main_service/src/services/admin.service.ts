@@ -4,9 +4,19 @@ import { User } from 'src/entities';
 import { CreateAdminBody } from '../dtos';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PermissionService } from './permisssion.service';
+import { LoginAdminBody } from '../dtos';
+
 import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
+import * as jwt from 'jsonwebtoken';
 
+
+/**
+ * all the business logic admins and super-admin, will be kept here in order to seprate 
+ * them from other Users [power users, users, support-desk] of the admin workspace.
+ * 
+ * this service uses token based authentication.
+ */
 export class AdminService {
   constructor(
     private dataSource: DataSource,
@@ -135,6 +145,48 @@ export class AdminService {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
+    }
+  }
+
+  async logIn_Admin_Or_SuperAdmin(body: LoginAdminBody) {
+    try {
+      let { username, password } = body;
+
+      const user = await this.getUserRepo().findOne({
+        where: {
+          username: username,
+        },
+      });
+      if (!user) {
+        throw new HttpException('Invalid user-name', HttpStatus.BAD_REQUEST);
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+      }
+
+      // sign token
+      const token = await jwt.sign(
+        { user: { ...user } },
+        'some-secret-encrypeted',
+        {
+          expiresIn: '10h',
+        },
+      );
+
+      return { message: 'successfully logged in', token };
+    } catch (error) {
+      console.log(
+        JSON.stringify({
+          type: 'SERVER ERROR',
+          error: error.message,
+        }),
+      );
+      throw new HttpException(
+        'something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
