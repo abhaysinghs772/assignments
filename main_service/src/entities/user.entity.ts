@@ -1,6 +1,15 @@
-import { Entity, Column, Unique } from 'typeorm';
+import {
+  Entity,
+  Column,
+  Unique,
+  ManyToMany,
+  JoinTable,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Permission } from '../enums';
+import { File, Group, Transection } from '../entities';
 
 @Entity()
 @Unique(['name', 'username', 'email', 'phone_number', 'role_name'])
@@ -41,6 +50,22 @@ export class User extends BaseEntity {
   @Column({ default: true })
   role_editable!: boolean;
 
-  @Column({ type: 'int', array: true, nullable: false})
+  @Column({ type: 'int', array: true, nullable: false })
   role_permissions!: Permission[];
+
+  @ManyToMany(() => Group, (group) => group.group_members)
+  @JoinTable()
+  groups: Group[];
+
+  @ManyToOne(() => Transection, (tr) => tr.transection_users)
+  user_transections: Transection[];
+
+  @OneToMany(() => Group, (group) => group.created_by)
+  groups_createdBy: Group[];
+
+  @OneToMany(() => Transection, (tr) => tr.created_by)
+  transections_createdBy: Transection[];
+
+  @OneToMany(() => File, (file) => file.uploaded_by)
+  file_createdBy: File[];
 }

@@ -40,19 +40,6 @@ export class AdminController {
   }
 
   /**
-   * only super can create groups
-   * aaply permission.guard here in order to check only a super admin can create groups 
-   * and assign admins to the group
-   * 
-   */
-  @Permissions_customDecorator(Permission.createGroup)
-  @UseGuards( PermissionGuard )
-  @Post('/create-group')
-  async createGroup(){
-
-  }
-
-  /**
    * once group has been created by the super admins, then only they can assign an admin to groups
    * permission.guard.superAdmin-only
    */
