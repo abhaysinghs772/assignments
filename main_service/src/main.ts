@@ -29,6 +29,9 @@ async function bootstrap() {
     }),
   );
 
+  // Configure Multer
+  app.use('/uploads', express.static('uploads'));
+
   const microserviceOptions: TcpOptions | MqttOptions = {};
 
   Object.assign(microserviceOptions, {

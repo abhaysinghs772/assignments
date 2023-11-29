@@ -19,8 +19,8 @@ export class GroupsController {
   @UseGuards(PermissionGuard)
   @Post('/create-group')
   async createGroup(@Req() req, @Body() body: CreateGroupBody) {
-    const {user: triggerd_by} = req;
-    return this.groupService.createGroup(triggerd_by, body);
+    const {user: triggered_by} = req;
+    return this.groupService.createGroup(triggered_by, body);
   }
 
   @Permissions_customDecorator(
@@ -30,7 +30,7 @@ export class GroupsController {
   @UseGuards(PermissionGuard)
   @Post('/assign-group')
   async assignAdminToGroup(@Req() req, @Body() body: Assign_Admin_To_GroupBody) {
-    const {user: triggerd_by} = req;
-    return this.groupService.assignAdminToGroup(triggerd_by, body);
+    const {user: triggered_by} = req;
+    return this.groupService.assignAdminToGroup(triggered_by, body);
   }
 }

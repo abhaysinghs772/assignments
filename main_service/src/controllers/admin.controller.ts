@@ -17,8 +17,8 @@ export class AdminController {
   @Permissions_customDecorator(Permission.createAdmin)
   @Post('/createAdmin-superAdmin')
   async create_SuperAdmin_or_Admin(@Body() body: CreateAdminBody, @Req() req) {
-    let { user: triggerd_by } = req;
-    return this.adminService.signUp_SuperAdmin_Or_Admin(triggerd_by, body);
+    let { user: triggered_by } = req;
+    return this.adminService.signUp_SuperAdmin_Or_Admin(triggered_by, body);
   }
 
   /**
@@ -51,8 +51,8 @@ export class AdminController {
   @UseGuards(PermissionGuard)
   @Post()
   async create_PowerUser_User(@Req() req, @Body() body) {
-    let {user: triggerd_by} = req;
-    return this.adminService.create_PowerUser_User(req, triggerd_by, body);
+    let {user: triggered_by} = req;
+    return this.adminService.create_PowerUser_User(req, triggered_by, body);
   }
 
   

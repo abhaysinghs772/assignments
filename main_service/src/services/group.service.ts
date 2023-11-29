@@ -29,7 +29,7 @@ export class GroupService {
     return this.Group;
   }
 
-  async createGroup(triggerd_by: User, body: CreateGroupBody) {
+  async createGroup(triggered_by: User, body: CreateGroupBody) {
     try {
       let { name, description } = body;
 
@@ -37,7 +37,7 @@ export class GroupService {
       Object.assign(groupBody, {
         name,
         description: description ? description : null,
-        created_by: triggerd_by.id,
+        created_by: triggered_by.id,
       });
 
       groupBody = await this.getGroupRepo().save(groupBody);
@@ -58,9 +58,9 @@ export class GroupService {
     }
   }
 
-  async assignAdminToGroup(triggerd_by: User, body: Assign_Admin_To_GroupBody) {
+  async assignAdminToGroup(triggered_by: User, body: Assign_Admin_To_GroupBody) {
     try {
-      let created_by = triggerd_by.id;
+      let created_by = triggered_by.id;
       let { group_admin, group_id } = body;
 
       let isGroupExist = await this.getGroupRepo().findOne({

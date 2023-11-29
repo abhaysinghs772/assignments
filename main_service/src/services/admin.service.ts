@@ -52,7 +52,7 @@ export class AdminService {
     return `https://frontEnd-app.com/login?token=${magicLinkToken}`;
   }
 
-  async signUp_SuperAdmin_Or_Admin(triggerd_by: User, body: CreateAdminBody) {
+  async signUp_SuperAdmin_Or_Admin(triggered_by: User, body: CreateAdminBody) {
     let { name, email, password, phone_number, role_name } = body;
 
     // check for existing user with the coming credentials
@@ -98,7 +98,7 @@ export class AdminService {
           role_name,
           password: encryptedPass,
           signUpDate: moment().toDate(),
-          created_by: triggerd_by
+          created_by: triggered_by
         });
         // saving permissions for super-admin
         superAdmin =
@@ -137,7 +137,7 @@ export class AdminService {
           role_name,
           password: encryptedPass,
           signUpDate: moment().toDate(),
-          created_by: triggerd_by
+          created_by: triggered_by
         });
         // creating permissions for admin
         admin = await this.permissionService.createPermissions_for_users(admin);
@@ -210,7 +210,7 @@ export class AdminService {
     );
   }
 
-  async create_PowerUser_User(req, triggerd_by: User, body: CreateAdminBody) {
+  async create_PowerUser_User(req, triggered_by: User, body: CreateAdminBody) {
     try {
       let {name, email, phone_number, role_name, group_id, group_name} = body;
 
@@ -223,7 +223,7 @@ export class AdminService {
         phone_number,
         role_name,
         signUpDate: moment().toDate(),
-        created_by: triggerd_by,
+        created_by: triggered_by,
         groups: [group_id]
       });
       // creating permissions for given role
