@@ -95,7 +95,7 @@ export class GroupService {
         subject: `[Assigned] [New Group]`,
         text: `you have been assined to a new group: ${updatedGroup.name}`
       };
-      this.NOTIFICATION_SERVICE.emit('my-custom-message', payload);
+      this.NOTIFICATION_SERVICE.emit('send-email', payload);
 
       return {
         message: `admin successfully assigned to  Group`,

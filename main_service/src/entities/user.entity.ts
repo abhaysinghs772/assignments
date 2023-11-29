@@ -23,7 +23,7 @@ export class User extends BaseEntity {
   @Column()
   email!: string;
 
-  @Column()
+  @Column({default: null, nullable: true})
   password!: string;
 
   @Column()
@@ -68,4 +68,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => File, (file) => file.uploaded_by)
   file_createdBy: File[];
+
+  @OneToMany(() => User, (user) => user.created_by)
+  users_creadtedBy: User[]
+
+  @ManyToOne(() => User, (user)=> user.users_creadtedBy)
+  created_by: User;
 }

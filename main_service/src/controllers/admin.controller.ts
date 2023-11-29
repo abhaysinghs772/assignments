@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Put, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Put, Query, UseGuards, Req } from '@nestjs/common';
 import { AdminService } from '../services';
 import { CreateAdminBody, LoginAdminBody, updatePermissionBody } from '../dtos';
 import { AccessGuard, PermissionGuard } from 'src/guards';
@@ -14,9 +14,11 @@ export class AdminController {
    * or Admin of the Application
    * @param body
    */
+  @Permissions_customDecorator(Permission.createAdmin)
   @Post('/createAdmin-superAdmin')
-  async create_SuperAdmin_or_Admin(@Body() body: CreateAdminBody) {
-    return this.adminService.signUp_SuperAdmin_Or_Admin(body);
+  async create_SuperAdmin_or_Admin(@Body() body: CreateAdminBody, @Req() req) {
+    let { user: triggerd_by } = req;
+    return this.adminService.signUp_SuperAdmin_Or_Admin(triggerd_by, body);
   }
 
   /**
@@ -48,8 +50,9 @@ export class AdminController {
   )
   @UseGuards(PermissionGuard)
   @Post()
-  async create_PowerUser_User() {
-    return this.adminService.create_PowerUser_User();
+  async create_PowerUser_User(@Req() req, @Body() body) {
+    let {user: triggerd_by} = req;
+    return this.adminService.create_PowerUser_User(req, triggerd_by, body);
   }
 
   

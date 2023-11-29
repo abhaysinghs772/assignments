@@ -8,6 +8,7 @@ import { Transport, TcpOptions, MqttOptions } from '@nestjs/microservices';
 
 import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
+import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(express));
@@ -18,6 +19,15 @@ async function bootstrap() {
   app.use(logger('dev'));
   
   app.useGlobalPipes(new ValidationPipe());
+
+  app.use(
+    session({
+      secret: 'some-super-strong-secret',
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false }, // Set to true in a production environment with HTTPS
+    }),
+  );
 
   const microserviceOptions: TcpOptions | MqttOptions = {};
 

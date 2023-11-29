@@ -20,4 +20,12 @@ export class CreateAdminBody {
     @IsNotEmpty()
     @IsString()
     role_name: string; 
+
+    @IsOptional()
+    @IsString()
+    group_id: string; 
+
+    @IsOptional()
+    @IsString()
+    group_name: string;
 }

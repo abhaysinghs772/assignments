@@ -106,6 +106,18 @@ export class PermissionService {
       user.role_permissions = this.admin_role_permissions;
       return user;
     }
+
+    if (user.role_name === 'power-user'){
+      user.role_permissions = this.powerUser_role_permissions;
+    }
+
+    if (user.role_name === 'user'){
+      user.role_permissions = this.user_role_permissions;
+    }
+
+    if (user.role_name === 'support-desk'){
+      user.role_permissions = this.supportDesk_role_permissions;
+    }
   }
 
 
@@ -152,7 +164,7 @@ export class PermissionService {
    * 2. update the 2 private variables above as well
    *
    */
-  async update_Permissions_Of_Admin_And_SuperAdmins(query: updatePermissionBody) {
+  async update_Permissions_Of_User(query: updatePermissionBody) {
     try {
 
       /**
