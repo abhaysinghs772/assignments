@@ -9,13 +9,13 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: 'localhost',
-        port: 3002,
+        port: 5002,
       },
     },
   );
 
   await app.listen().then(() => {
-    console.log('notification_service is listening on port 3002');
+    console.log('notification_service is listening on port 5002');
   });
 }
 bootstrap();
