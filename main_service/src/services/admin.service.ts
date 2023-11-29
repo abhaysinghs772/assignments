@@ -193,4 +193,8 @@ export class AdminService {
   async update_Permissions_Of_Admin_And_SuperAdmins(query){
     return this.permissionService.update_Permissions_Of_Admin_And_SuperAdmins(query);
   }
+
+  async create_PowerUser_User(){
+    
+  }
 }

@@ -1,7 +1,7 @@
-import { Controller, Post, Body , Put, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Put, Query, UseGuards } from '@nestjs/common';
 import { AdminService } from '../services';
-import { CreateAdminBody , LoginAdminBody, updatePermissionBody} from '../dtos';
-import { PermissionGuard } from 'src/guards';
+import { CreateAdminBody, LoginAdminBody, updatePermissionBody } from '../dtos';
+import { AccessGuard, PermissionGuard } from 'src/guards';
 import { Permissions_customDecorator } from 'src/decorators';
 import { Permission } from 'src/enums';
 
@@ -20,13 +20,15 @@ export class AdminController {
   }
 
   /**
-   * as the application grows/scales further, there is high possibility that and admins or a 
+   * as the application grows/scales further, there is high possibility that and admins or a
    * super admin's permissions may also can change, so use this endpoint to update all the required
    * permissions related to either admins or super admin
-   * 
+   *
    */
   @Put('update-permissions')
-  async update_Permissions_Of_Admins_And_SuperAdmin(@Query() query: updatePermissionBody): Promise<void>{
+  async update_Permissions_Of_Admins_And_SuperAdmin(
+    @Query() query: updatePermissionBody,
+  ): Promise<void> {
     return this.adminService.update_Permissions_Of_Admin_And_SuperAdmins(query);
   }
 
@@ -36,17 +38,19 @@ export class AdminController {
    */
   @Post('/login')
   async login(@Body() body: LoginAdminBody) {
-      return this.adminService.logIn_Admin_Or_SuperAdmin(body);
+    return this.adminService.logIn_Admin_Or_SuperAdmin(body);
   }
 
-  /**
-   * once group has been created by the super admins, then only they can assign an admin to groups
-   * permission.guard.superAdmin-only
-   */
-  // @Permissions_customDecorator(Permission.assign_admin_to_group) // uncomment this once all permissions will updated in db
-  @UseGuards( PermissionGuard )
-  @Post('/assign-admin-to-group')
-  async assign_admin_to_group(){
-
+  // @AccessGuard()
+  @Permissions_customDecorator(
+    Permission.createPowerUser,
+    Permission.createUser,
+  )
+  @UseGuards(PermissionGuard)
+  @Post()
+  async create_PowerUser_User() {
+    return this.adminService.create_PowerUser_User();
   }
+
+  
 }
