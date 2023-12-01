@@ -18,7 +18,7 @@ export class notificationService {
     let {to, subject, text} = payload
     try {
         await this.transporter.sendMail({
-            from: 'your-email@gmail.com',
+            from: process.env.EMAIL_ADDR,
             to,
             subject,
             text,

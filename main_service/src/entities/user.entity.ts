@@ -74,4 +74,10 @@ export class User extends BaseEntity {
 
   @ManyToOne(() => User, (user)=> user.users_creadtedBy)
   created_by: User;
+
+  /**
+   * number of docs/transections signed by the Admin or super Admin
+   */
+  @ManyToOne(() => Transection, (tr) => tr.transection_signedBY)
+  user_signed: Transection[];
 }

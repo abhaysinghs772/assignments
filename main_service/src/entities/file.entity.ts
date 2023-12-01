@@ -1,17 +1,17 @@
 import { BaseEntity } from './base.entity';
-import { Entity, Column, ManyToMany, ManyToOne } from 'typeorm';
-import { User, Group } from '../entities';
-import { TransectionType } from '../enums';
+import { Entity, Column, ManyToOne } from 'typeorm';
+import { User, Group, Transection } from '../entities';
+import { FileType } from 'src/enums';
 
 @Entity()
 export class File extends BaseEntity {
-  @Column()
-  filename!: string;
+  @Column({nullable: false})
+  fileName!: string;
 
-  @Column()
-  fileType!: string;
+  @Column({nullable: false})
+  fileType!: FileType;
 
-  @Column()
+  @Column({nullable: false})
   s3Url!: string;
 
   @Column({ nullable: true })
@@ -22,4 +22,7 @@ export class File extends BaseEntity {
 
   @ManyToOne(() => Group, (group) => group.group_files)
   file_group!: Group;
+
+  @ManyToOne(()=> Transection, (tr) => tr.transection_files)
+  file_transection: Transection;
 }

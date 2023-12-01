@@ -5,10 +5,8 @@ import { TransectionType } from '../enums';
 
 @Entity()
 export class Transection extends BaseEntity {
-  @Column()
-  name!: string;
 
-  @Column()
+  @Column({nullable: true})
   description: string;
 
   @Column()
@@ -26,4 +24,13 @@ export class Transection extends BaseEntity {
    */
   @OneToMany(() => User, (user) => user.user_transections)
   transection_users: User[];
+
+  @OneToMany(() => User, (user) => user.user_signed)
+  transection_signedBY: User[];
+
+  /**
+   * include [1pdf , 1esign, 1esign]
+   */
+  @OneToMany(()=> File, (file)=> file.file_transection)
+  transection_files: File[]
 }

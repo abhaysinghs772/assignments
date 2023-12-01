@@ -41,3 +41,5 @@ lerna-debug.log*
 
 #pdf
 Assignment_AdminRoles-E-Sign.pdf
+
+.env

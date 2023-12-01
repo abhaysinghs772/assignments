@@ -15,20 +15,21 @@ import { AccessGuard, PermissionGuard } from 'src/guards';
 
 @Controller('api/v1/bhumio')
 export class TransectionController {
-  constructor(private readonly transectionService: TransectionService) {}
+  constructor(
+    private readonly transectionService: TransectionService,
+  ) {}
 
-//   @AccessGuard()
+  //   @AccessGuard()
   @Permissions_customDecorator(Permission.createTransection)
   @UseGuards(PermissionGuard)
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file')) // 'file' is the name of the form field
+  @Post('/upload-doc-sign')
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@Req() req, @UploadedFile() file, @Body() body) {
     let { user: triggered_by } = req;
-    let { forward_to } = body;
-    return this.transectionService.upload_Pdf_Or_sign(
+    return this.transectionService.upload_Pdf_Or_eSign(
       triggered_by,
       file,
-      forward_to,
+      body,
     );
   }
 }
